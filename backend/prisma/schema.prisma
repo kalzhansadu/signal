@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SignalDirection {
+  LONG
+  SHORT
+}
+
+enum StructureBias {
+  BULLISH
+  BEARISH
+  NEUTRAL
+}
+
+enum SmcEventType {
+  BOS
+  CHOCH
+}
+
+enum SignalStatus {
+  ACTIVE
+  HIT_TP
+  HIT_SL
+  EXPIRED
+}
+
+enum ZoneSide {
+  BULL
+  BEAR
+}
+
+enum OrderBlockStatus {
+  UNMITIGATED
+  MITIGATED
+  BROKEN
+}
+
+enum FvgStatus {
+  OPEN
+  PARTIAL
+  FILLED
+}
+
+enum LiquidityType {
+  BSL
+  SSL
+}
+
+enum PremiumDiscount {
+  PREMIUM
+  DISCOUNT
+  EQUILIBRIUM
+}
+
+enum EntryType {
+  OB
+  FVG
+  OB_FVG
+}
+
+model MarketData {
+  id        String   @id @default(cuid())
+  symbol    String
+  timeframe String
+  open      Decimal
+  high      Decimal
+  low       Decimal
+  close     Decimal
+  volume    Decimal
+  timestamp DateTime
+
+  @@unique([symbol, timeframe, timestamp])
+  @@map("market_data")
+}
+
+model Signal {
+  id               String           @id @default(cuid())
+  symbol           String
+  timeframe        String
+  direction        SignalDirection
+  entryPrice       Decimal          @map("entry_price")
+  stopLoss         Decimal          @map("stop_loss")
+  takeProfit       Decimal          @map("take_profit")
+  riskPercent      Decimal          @map("risk_percent")
+  rsiValue         Decimal?         @map("rsi_value")
+  macdValue        Decimal?         @map("macd_value")
+  atrValue         Decimal?         @map("atr_value")
+  smcStructure     StructureBias    @map("smc_structure")
+  smcEvent         SmcEventType     @map("smc_event")
+  obHigh           Decimal?         @map("ob_high")
+  obLow            Decimal?         @map("ob_low")
+  liquidityTarget  Decimal?         @map("liquidity_target")
+  qualityScore     Int              @map("quality_score")
+  premiumDiscount  PremiumDiscount  @map("premium_discount")
+  entryType        EntryType        @map("entry_type")
+  status           SignalStatus     @default(ACTIVE)
+  createdAt        DateTime         @default(now()) @map("created_at")
+  closedAt         DateTime?        @map("closed_at")
+  pnlPercent       Decimal?         @map("pnl_percent")
+
+  @@map("signals")
+}
+
+model MarketStructure {
+  id          String   @id @default(cuid())
+  symbol      String
+  timeframe   String
+  type        String
+  priceLevel  Decimal  @map("price_level")
+  candleIndex Int      @map("candle_index")
+  timestamp   DateTime
+
+  @@map("market_structure")
+}
+
+model OrderBlock {
+  id          String           @id @default(cuid())
+  symbol      String
+  timeframe   String
+  type        ZoneSide
+  obHigh      Decimal          @map("ob_high")
+  obLow       Decimal          @map("ob_low")
+  obTimestamp DateTime         @map("ob_timestamp")
+  status      OrderBlockStatus @default(UNMITIGATED)
+  createdAt   DateTime         @default(now()) @map("created_at")
+
+  @@map("order_blocks")
+}
+
+model FairValueGap {
+  id           String    @id @default(cuid())
+  symbol       String
+  timeframe    String
+  type         ZoneSide
+  gapHigh      Decimal   @map("gap_high")
+  gapLow       Decimal   @map("gap_low")
+  gapTimestamp DateTime  @map("gap_timestamp")
+  status       FvgStatus @default(OPEN)
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  @@map("fair_value_gaps")
+}
+
+model LiquidityZone {
+  id         String        @id @default(cuid())
+  symbol     String
+  timeframe  String
+  type       LiquidityType
+  priceLevel Decimal       @map("price_level")
+  swept      Boolean       @default(false)
+  sweptAt    DateTime?     @map("swept_at")
+  createdAt  DateTime      @default(now()) @map("created_at")
+
+  @@map("liquidity_zones")
+}
+
+model Settings {
+  id                       Int      @id @default(1)
+  symbols                  Json
+  scanIntervalMin          Int      @default(15) @map("scan_interval_min")
+  rsiPeriod                Int      @default(14) @map("rsi_period")
+  atrMultiplier            Decimal  @default(1.5) @map("atr_multiplier")
+  riskRewardRatio          Decimal  @default(2) @map("risk_reward_ratio")
+  swingLookback            Int      @default(3) @map("swing_lookback")
+  minQualityScore          Int      @default(40) @map("min_quality_score")
+  telegramToken            String?  @map("telegram_token")
+  telegramChatId           String?  @map("telegram_chat_id")
+  telegramQualityThreshold Int      @default(75) @map("telegram_quality_threshold")
+
+  @@map("settings")
+}

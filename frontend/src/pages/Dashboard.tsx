@@ -10,7 +10,7 @@ import { useUiStore } from '../store/uiStore';
 import type { Signal, Timeframe } from '../types/domain';
 
 const timeframes: Timeframe[] = ['5m', '15m', '1h', '4h', '1d'];
-const symbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT', 'XRPUSDT'];
+const symbols = [{ value: 'XAUUSD', label: 'XAU/USD' }];
 
 export const Dashboard = () => {
   const queryClient = useQueryClient();
@@ -53,7 +53,7 @@ export const Dashboard = () => {
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <select className="control" value={symbol} onChange={(event) => setSymbol(event.target.value)}>
-              {symbols.map((item) => <option key={item}>{item}</option>)}
+              {symbols.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
             </select>
             <select className="control" value={timeframe} onChange={(event) => setTimeframe(event.target.value as Timeframe)}>
               {timeframes.map((item) => <option key={item}>{item}</option>)}

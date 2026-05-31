@@ -129,7 +129,7 @@ const fetchYahooCandles = async (symbol: string, timeframe: Timeframe, limit: nu
 export const marketService = {
   async fetchCandles(symbol: string, timeframe: Timeframe, limit = 500): Promise<Candle[]> {
     try {
-      if (symbol === 'XAUUSD') return fetchYahooCandles(symbol, timeframe, limit);
+      if (symbol === 'XAUUSD') return await fetchYahooCandles(symbol, timeframe, limit);
       throw new Error(`unsupported symbol ${symbol}`);
     } catch (error) {
       await logger.error(`market fetch failed ${symbol} ${timeframe}: ${(error as Error).message}`);

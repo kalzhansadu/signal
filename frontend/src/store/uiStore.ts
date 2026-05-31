@@ -22,7 +22,7 @@ interface UiState {
 
 export const useUiStore = create<UiState>((set) => ({
   page: 'dashboard',
-  symbol: 'BTCUSDT',
+  symbol: 'XAUUSD',
   timeframe: '1h',
   overlays: {
     orderBlocks: true,

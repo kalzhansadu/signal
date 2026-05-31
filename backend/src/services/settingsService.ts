@@ -2,7 +2,7 @@ import { env } from '../config/env.js';
 import type { Settings } from '../types/domain.js';
 
 let settings: Settings = {
-  symbols: ['BTCUSDT', 'ETHUSDT', 'SOLUSDT'],
+  symbols: ['XAUUSD'],
   timeframes: ['15m', '1h', '4h'],
   scanIntervalMin: env.scanIntervalMin,
   rsiPeriod: 14,
